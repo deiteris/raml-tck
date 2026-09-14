@@ -11,4 +11,4 @@ Test cases must be put under the `tests` directory by either putting your tests 
 
 ## Running tests
 
-We've created a separate project called [raml-tck-runner](https://github.com/raml-org/raml-tck-runner) to run all the tests contained in the RAML TCK. By following the instructions on that repository, you should be able to test any new test case that you may want to contribute against the different projects that this [raml-tck-runner](https://github.com/raml-org/raml-tck-runner) covers.
+Upstream ran the suite through [raml-tck-runner](https://github.com/raml-org/raml-tck-runner). That project is archived along with the runners this fork removed, so run a new test case against whichever processor you are working on, and record its expected outcome there.

@@ -1,0 +1,4 @@
+# The fixtures are parsed by the processors that consume them, and several
+# assert on line and column. Normalising line endings on checkout would shift
+# a position and silently change what a fixture tests.
+* -text

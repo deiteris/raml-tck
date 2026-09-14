@@ -1,27 +1,116 @@
 # RAML TCK
 
-RAML's Test Compatibility Kit (RAML TCK) provides a way for any RAML processor to test its compliance with the RAML 1.0 Spec. RAML TCK contains a set of RAML documents meant to be used to test correct and incorrect usage of each RAML feature.
+RAML's Test Compatibility Kit (RAML TCK) provides a way for any RAML processor to
+test its compliance with the
+[RAML 1.0 Spec](https://github.com/raml-org/raml-spec/blob/master/versions/raml-10/raml-10.md).
+It contains a set of RAML documents meant to test correct and incorrect usage of
+each RAML feature.
+
+A fork of [raml-org/raml-tck](https://github.com/raml-org/raml-tck), which was
+**archived on 19 January 2024** and is read-only. Nothing here goes back
+upstream, so this fork diverges deliberately rather than carrying patches.
+
+The fixtures are under [`tests/raml-1.0/`](tests/raml-1.0/).
 
 ## Naming convention
 
 - `*valid*.raml`: valid RAML file expected to be successfully processed
-- `*invalid*.raml`: invalid RAML file with syntax/semantic/spec error(s), expected to be unsuccessfully processed (error or exit code returned)
+- `*invalid*.raml`: invalid RAML file with syntax/semantic/spec error(s),
+  expected to be unsuccessfully processed (error or exit code returned)
 
-Note that this repository contains a [manifest file](./manifest.json) that lists all tests in the order their respective tested features appear in the RAML 1.0 Spec.
+`invalid` contains `valid` as a substring, so a harness matching `*valid*` has to
+exclude `*invalid*` explicitly or every negative fixture lands in both sets.
+
+Not every `.raml` file is an entry point. Includes and libraries sit beside the
+fixtures that use them and carry neither word in their names.
+
+Discovery is by this convention alone; upstream's `manifest.json` is not kept.
+
+## What this fork changes
+
+### The fixture set tracks the acronis/go-raml copy
+
+Upstream's fixtures were replaced with the customised copy vendored in
+[acronis/go-raml](https://github.com/acronis/go-raml). That copy is not a light
+touch — measured against upstream it is **63 files modified, 38 removed and 57
+added**:
+
+| | Where |
+|---|---|
+| Added | mostly `Types/` (32) and `Libraries/` (14) |
+| Removed | mostly `Types/` (18) and `EdgeCases/` (14), including the `Types/External Types/include-type-xsd/` XML Schema fixtures |
+| Modified | spread across the suite |
+
+The two lineages had already diverged in practice: a processor tested against the
+go-raml copy was running a different suite from one tested against upstream, and
+nothing recorded the difference. This fork puts that copy under version control,
+so it is a diff rather than folklore.
+
+### Three fixtures were wrong and are fixed
+
+Each tested nothing, or tested the wrong thing.
+[KNOWN-ISSUES.md](./KNOWN-ISSUES.md) records the spec text that settles each.
+
+| Fixture | What was wrong |
+|---|---|
+| `Annotations/target-locations/valid-response.raml` | Declared `allowedTargets: Method` while applying the annotation to a response. A parser that enforces `allowedTargets` must reject it as written. |
+| `Fragments/namedexample-01/examples/*.raml` | Two `!include` targets were named `invalid-one-example.raml` and `valid-multiple-examples.raml`, so a harness picked them up as entry points. Renamed. |
+| `Annotations/complex-11/*-multiple-annots.raml` | `pattern: "[a-zA-Z0-9]{8,32}"` is unanchored, so it matched inside the value it was meant to reject and the valid/invalid pair tested nothing. Anchored. |
+
+A fixture being wrong is a bug in the suite. Fixing it here is what stops every
+consumer encoding the same workaround separately.
+
+### The runners and the manifest are gone
+
+Upstream shipped per-language runners (`runner/`, in Go, Java, JavaScript, Python
+and Ruby), a `manifest.json` with its `genmanifest.js` generator, an npm manifest
+for the JavaScript runner, and a GitHub Pages workflow. All removed: they target
+parsers that are themselves archived, and a consumer brings its own harness.
+
+## Using it
+
+As a git submodule:
+
+```bash
+git submodule add https://github.com/deiteris/raml-tck.git tests/tck/raml-tck
+```
+
+The fixtures are then at `tests/tck/raml-tck/tests/raml-1.0/`. Walk it for
+`*.raml`, split on the naming convention, and record an expected outcome per
+fixture so that progress and regressions are both visible.
+
+Two fixtures reach the network: `Root/include-02/valid-https.raml` and
+`invalid-https.raml` both `!include` a gist. A suite that runs them is not
+hermetic, and the negative one passes offline for the wrong reason — an
+unreachable host and an unregistered URI scheme both produce an error.
+
+`Overlays/` and `Extensions/` are a distinct language feature. A processor that
+has not implemented them should skip those directories rather than record
+failures.
 
 ## Projects using this TCK
 
-Here are a few projects that have been tested against RAML TCK:
-* Go: [Jumpscale/go-raml](https://github.com/Jumpscale/go-raml), [go-raml/raml](https://github.com/go-raml/raml)
-* JavaScript: [amf-client-js](https://github.com/aml-org/amf), [raml-1-parser](https://github.com/raml-org/raml-js-parser-2), [webapi-parser](https://github.com/raml-org/webapi-parser)
-* Python: [ramlfications](https://github.com/spotify/ramlfications), [pyraml-parser](https://github.com/an2deg/pyraml-parser)
-* Ruby: [brujula](https://github.com/nogates/brujula), [raml-rb](https://github.com/jpb/raml-rb)
-* Java: [amf](https://github.com/aml-org/amf), [webapi-parser](https://github.com/raml-org/webapi-parser), [raml-java-parser](https://github.com/raml-org/raml-java-parser)
+* Python: [fastRAML](https://github.com/deiteris/FastRAML) — consumes this fork
+  as a submodule, with a ratchet recording the expected result of every fixture.
 
-(Feel free to submit a PR to list any other tool that may be using the RAML TCK)
-
-A compilation of the above project test results can be found on [this page](http://raml-org.github.io/raml-tck/). Those results have been generated using [raml-tck-runner](https://github.com/raml-org/raml-tck-runner).
+Upstream additionally listed parsers in Go, JavaScript, Python, Ruby and Java,
+along with a [published results page](http://raml-org.github.io/raml-tck/)
+generated by `raml-tck-runner`. Both are of historical interest only: the runner
+and most of those parsers are archived.
 
 ## Contributing
 
-We welcome contributions! If you have a new test case in mind, feel free to submit a pull request. More info on how to do that [here](./CONTRIBUTING.md).
+New fixtures are welcome — see [CONTRIBUTING.md](./CONTRIBUTING.md) for the
+layout each test case follows. A fix to an *existing* fixture needs the spec text
+that settles it, because "a parser disagrees with this fixture" is not by itself
+evidence that the fixture is wrong.
+
+## Licence
+
+Upstream states none — there is no `LICENSE` file in
+[raml-org/raml-tck](https://github.com/raml-org/raml-tck) — and this fork adds
+none, being in no position to grant terms over material published without them.
+It is redistributed on the footing every RAML processor has redistributed it: a
+conformance suite an archived project published to be run against.
+
+If you are the rights holder and want this changed, open an issue.

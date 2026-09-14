@@ -36,20 +36,19 @@ types:
             application/json:
               schema: |
                 {
-                  "required": true,
-                  "$schema": "http://json-schema.org/draft-03/schema",
+                  "$schema": "http://json-schema.org/draft-04/schema#",
                   "type": "object",
                   "properties": {
                     "message": {
-                      "required": false,
                       "type": "string"
                     }
-                  }
+                  },
+                  "required": ["message"]
                 }
         200:
           body:
             application/json:
-              schema: '{"required": true,"$schema": "http://json-schema.org/draft-03/schema","type": "object","properties": {  "message": {"required": false,"type": "string"}}}'
+              schema: '{"$schema": "http://json-schema.org/draft-04/schema#","type": "object","properties": {  "message": {"type": "string"}},"required": ["message"]}'
         202:
           body:
             application/json:
