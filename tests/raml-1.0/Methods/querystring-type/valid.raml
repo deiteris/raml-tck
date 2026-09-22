@@ -1,0 +1,18 @@
+#%RAML 1.0
+title: Test
+types:
+  Filter:
+    properties:
+      tag: string[]
+/scalar:
+  get:
+    queryString:
+      type: string
+      pattern: ^[a-z]+$
+/object:
+  get:
+    queryString: Filter
+/union:
+  get:
+    queryString:
+      type: Filter | string

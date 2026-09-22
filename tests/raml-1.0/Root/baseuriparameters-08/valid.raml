@@ -1,0 +1,9 @@
+#%RAML 1.0
+title: Test
+version: v1
+baseUri: https://{tenant}.example.com/{version}
+baseUriParameters:
+  tenant:
+    type: string
+  version:
+    enum: [v1]

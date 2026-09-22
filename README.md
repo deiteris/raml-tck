@@ -60,6 +60,17 @@ Each tested nothing, or tested the wrong thing.
 A fixture being wrong is a bug in the suite. Fixing it here is what stops every
 consumer encoding the same workaround separately.
 
+### Fixtures added for spec requirements the suite did not test
+
+Each directory pins a MUST that no fixture exercised, so a parser could ignore it
+and still pass the whole suite.
+
+| Directory | Spec text |
+|---|---|
+| `Root/baseuri-syntax/` | § Base URI: the value "MUST conform to the URI specification RFC2396 or a Template URI". The invalid fixtures hold a space, a `%` that starts no pct-encoded octet, and a scheme beginning with a digit. `valid.raml` is a template with a port, a pct-encoded octet and a query. |
+| `Root/baseuriparameters-08/` | § Base URI: `baseUriParameters` "MUST follow the same structure as the uriParameters node", and § Template URIs and URI Parameters: "Every property in a uriParameters declaration MUST correspond exactly to the name of a URI parameter". The invalid fixtures declare a parameter the base URI does not use, and one with no base URI at all. `valid.raml` also declares the reserved `version`, which the base URI uses. |
+| `Methods/querystring-type/` | § The Query String as a Whole: "all base types in type hierarchy of the data type MUST be either a scalar type or the object type, after fully expanding any union type expressions at every level". The invalid fixtures give an inline array, a named array type, and a union with an array member. `valid.raml` covers a scalar, an object with an array property, and an object-or-string union. |
+
 ### The runners and the manifest are gone
 
 Upstream shipped per-language runners (`runner/`, in Go, Java, JavaScript, Python
