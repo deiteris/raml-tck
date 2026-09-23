@@ -82,3 +82,72 @@ assumption about which is meant.
 **Do not anchor `/regex/` property names on the same reasoning.** Those match
 *against* a key rather than describing one, and `/^note\d+$/` is how the spec's
 own example writes them.
+
+---
+
+## 4. `Overlays/override-default/invalid.raml` changes nothing
+
+**Fixed.**
+
+The master declares:
+
+```yaml
+          name:
+            type: string
+            default: Blah
+```
+
+and the overlay, expected to fail, restates it:
+
+```yaml
+          name:
+            default: Blah
+```
+
+Spec § Overlays: after merging, "the tree of nodes in the merged document is
+compared with the tree of nodes in the master RAML document", and "any
+differences in the documents MUST be only in the nodes listed" in the
+allowed-differences table. `default` is not in the table, but restating it with
+the same value produces no difference, so an overlay that only does that is
+valid. Merging Rules says the same from the other side: a single-value property
+is replaced by the extension's value, which here is the master's own.
+
+A processor could only reject the fixture by treating the *presence* of a
+disallowed key in the overlay as a violation, which is not what the spec
+compares. amf-client-js, which implements the overlay check, accepts the file
+as written.
+
+Changed to `default: Bleh`, a real difference in a node the table does not
+list, so the fixture now fails for the reason its name gives.
+
+---
+
+## 5. `Overlays/double-displayname-override/base1.raml` is not a valid master
+
+**Fixed.**
+
+The master of both fixtures in the directory applies a security scheme it never
+declares:
+
+```yaml
+securedBy: x-ttt
+```
+
+Spec § Applying Security Schemes: "The value assigned to the securedBy node
+MUST be a list of any of the security schemes previously defined in the
+securitySchemes node of RAML document root." There is no `securitySchemes`
+node, so the master is invalid, and Merging Rules requires
+that "Master Tree and Extension Tree are validated". `valid.raml` therefore
+fails, and `invalid-add-trait-headers.raml` fails without ever reaching the
+trait change it exists to test.
+
+The sibling `Overlays/override-displayname/base.raml` is the same document with
+the declaration present:
+
+```yaml
+securitySchemes:
+   x-ttt:
+      type: Digest Authentication
+```
+
+Declared the same way here.

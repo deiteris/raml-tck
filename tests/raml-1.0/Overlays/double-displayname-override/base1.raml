@@ -2,6 +2,9 @@
 title: hybrid-rest-services
 version: 0.4
 mediaType: application/json
+securitySchemes:
+   x-ttt:
+      type: Digest Authentication
 securedBy: x-ttt
 protocols: [ HTTP ]
 baseUri: https://anypoint.mulesoft.com/hybrid/api/v1

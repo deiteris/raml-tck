@@ -46,7 +46,7 @@ go-raml copy was running a different suite from one tested against upstream, and
 nothing recorded the difference. This fork puts that copy under version control,
 so it is a diff rather than folklore.
 
-### Three fixtures were wrong and are fixed
+### Five fixtures were wrong and are fixed
 
 Each tested nothing, or tested the wrong thing.
 [KNOWN-ISSUES.md](./KNOWN-ISSUES.md) records the spec text that settles each.
@@ -56,6 +56,8 @@ Each tested nothing, or tested the wrong thing.
 | `Annotations/target-locations/valid-response.raml` | Declared `allowedTargets: Method` while applying the annotation to a response. A parser that enforces `allowedTargets` must reject it as written. |
 | `Fragments/namedexample-01/examples/*.raml` | Two `!include` targets were named `invalid-one-example.raml` and `valid-multiple-examples.raml`, so a harness picked them up as entry points. Renamed. |
 | `Annotations/complex-11/*-multiple-annots.raml` | `pattern: "[a-zA-Z0-9]{8,32}"` is unanchored, so it matched inside the value it was meant to reject and the valid/invalid pair tested nothing. Anchored. |
+| `Overlays/override-default/invalid.raml` | Set `default` to the value the master already had, which is not a difference between the trees. Now a different value. |
+| `Overlays/double-displayname-override/base1.raml` | Applied `securedBy: x-ttt` without declaring `x-ttt`, so the master was invalid and both fixtures failed for that reason instead of the overlay. Declared. |
 
 A fixture being wrong is a bug in the suite. Fixing it here is what stops every
 consumer encoding the same workaround separately.
