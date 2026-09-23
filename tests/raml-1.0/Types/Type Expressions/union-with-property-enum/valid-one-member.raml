@@ -1,0 +1,23 @@
+#%RAML 1.0
+title: Scheduling API
+
+# Every value fits the meeting dates; none fits the vacation dates.
+types:
+  PossibleMeetingDates:
+    properties:
+      daysAllowed:
+        type: string
+        enum: [Monday12, Wednesday7, Friday3]
+  PossibleVacationDates:
+    properties:
+      daysAllowed:
+        type: string
+        enum: [Feb1, Feb22]
+  ScheduledDays:
+    type: PossibleMeetingDates | PossibleVacationDates
+    properties:
+      daysAllowed:
+        type: string
+        enum: [Monday12, Friday3]
+    example:
+      daysAllowed: Friday3

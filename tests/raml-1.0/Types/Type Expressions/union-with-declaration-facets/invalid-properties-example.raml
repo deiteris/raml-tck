@@ -1,0 +1,20 @@
+#%RAML 1.0
+title: Some API
+
+types:
+  Cat:
+    properties:
+      name: string
+      color: string
+  Dog:
+    properties:
+      name: string
+      fangs: string
+  CatOrDog:
+    type: Cat | Dog
+    properties:
+      age: integer
+    example:
+      name: Musia
+      color: brown
+      age: three

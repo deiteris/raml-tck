@@ -1,0 +1,11 @@
+#%RAML 1.0
+title: Some API
+
+types:
+  Codes: string[]
+  Names: string[]
+  CodesOrNames:
+    type: Codes | Names
+    items:
+      maxLength: 3
+    example: [abc, de]

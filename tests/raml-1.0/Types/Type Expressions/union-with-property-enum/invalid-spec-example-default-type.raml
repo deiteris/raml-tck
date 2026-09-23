@@ -1,0 +1,27 @@
+#%RAML 1.0
+title: Scheduling API
+
+# The spec's own example (§ Union Type), marked VALID there. Under the spec's
+# rules it is not: the restated `daysAllowed` has no `type`, and its only facet,
+# `enum`, is unique to no type, so its default type is `string`
+# (§ Determine Default Types). A sub-type may only narrow a property's type
+# (§ Object Type), and `string` narrows neither `CustomDates | date-only` nor
+# `datetime-only`.
+types:
+  CustomDates:
+    enum: [Monday12, Tuesday18, Wednesday7]
+  PossibleMeetingDates:
+    properties:
+      daysAllowed:
+        type: CustomDates | date-only
+        enum: [Monday12, Wednesday7, 2020-02-08, 2020-02-09]
+  PossibleVacationDates:
+    properties:
+      daysAllowed:
+        type: datetime-only
+        enum: [2020-02-01T00:00:00, 2019-02-22T00:00:00]
+  ScheduledDays:
+    type: PossibleMeetingDates | PossibleVacationDates
+    properties:
+      daysAllowed:
+        enum: [2020-02-01T00:00:00, Monday12]

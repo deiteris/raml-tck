@@ -1,0 +1,23 @@
+#%RAML 1.0
+title: Scheduling API
+
+# Wednesday7 is a meeting date, but the enum beside the union excludes it.
+types:
+  PossibleMeetingDates:
+    properties:
+      daysAllowed:
+        type: string
+        enum: [Monday12, Wednesday7, Friday3]
+  PossibleVacationDates:
+    properties:
+      daysAllowed:
+        type: string
+        enum: [Feb1, Feb22]
+  ScheduledDays:
+    type: PossibleMeetingDates | PossibleVacationDates
+    properties:
+      daysAllowed:
+        type: string
+        enum: [Feb1, Monday12]
+    example:
+      daysAllowed: Wednesday7

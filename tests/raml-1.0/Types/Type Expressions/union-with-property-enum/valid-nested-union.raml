@@ -1,0 +1,29 @@
+#%RAML 1.0
+title: Scheduling API
+
+# Feb1 fits only the vacation dates. Monday12 fits only the meeting dates,
+# inside the nested union, whose other member admits neither value.
+types:
+  PossibleMeetingDates:
+    properties:
+      daysAllowed:
+        type: string
+        enum: [Monday12, Wednesday7]
+  PossibleVacationDates:
+    properties:
+      daysAllowed:
+        type: string
+        enum: [Feb1, Feb22]
+  PossibleHolidays:
+    properties:
+      daysAllowed:
+        type: string
+        enum: [Jan1]
+  ScheduledDays:
+    type: PossibleVacationDates | (PossibleMeetingDates | PossibleHolidays)
+    properties:
+      daysAllowed:
+        type: string
+        enum: [Feb1, Monday12]
+    example:
+      daysAllowed: Monday12

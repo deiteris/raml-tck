@@ -1,0 +1,11 @@
+#%RAML 1.0
+title: Some API
+
+types:
+  Cat:
+    properties:
+      name: string
+  CatOrName:
+    type: Cat | string
+    properties:
+      age: integer
