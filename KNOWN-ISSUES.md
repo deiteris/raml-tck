@@ -151,3 +151,29 @@ securitySchemes:
 ```
 
 Declared the same way here.
+
+---
+
+## 6. `Types/ObjectTypes/pattern-property-chars/invalid-does-not-match-pattern.raml` rejects a key the spec accepts
+
+**Fixed.**
+
+The fixture declared `/a-zA-Z/: number` and expected the example `abc: bar` to
+fail. The pattern is the literal text `a-zA-Z`, so `abc` matches no pattern
+and is an ordinary additional property, which `additionalProperties` (omitted,
+so `true`) allows.
+
+Spec § Property Declarations settles it with its own example: beside
+`/^note\d+$/: string`, the instance key `note: 123` is "valid as it does not
+match the pattern" (`versions/raml-10/raml-10.md` line 712 in
+`https://github.com/raml-org/raml-spec`). Pattern properties restrict the keys
+they match; only `additionalProperties: false` closes the key set.
+
+go-raml (`https://github.com/acronis/go-raml`, `complex.go`, object
+validation) agrees: a key that is neither declared nor matched by a pattern is
+refused only when `additionalProperties` is `false`.
+
+The example key is now `a-zA-Z`, which the literal pattern matches, with the
+value `bar`, which is not a `number`. The fixture still fails, now because the
+matched pattern rejects the value. The file name is kept so that outcome
+records keyed by it stay valid.
