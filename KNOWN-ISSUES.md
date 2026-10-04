@@ -177,3 +177,35 @@ The example key is now `a-zA-Z`, which the literal pattern matches, with the
 value `bar`, which is not a `number`. The fixture still fails, now because the
 matched pattern rejects the value. The file name is kept so that outcome
 records keyed by it stay valid.
+
+---
+
+## 7. `Types/Facets/redefine-built-in/valid.raml` redeclares a built-in facet
+
+**Fixed.**
+
+The fixture declared a user-defined facet named `format` on a subtype of
+`datetime`:
+
+```yaml
+  myDate:
+    type: datetime
+    facets:
+       format: string
+```
+
+Spec § User-defined Facets: "User-defined facet names on a type MUST NOT match
+built-in facets on that type, nor facet names of any ancestor type in the
+inheritance chain of the type" (`versions/raml-10/raml-10.md` line 1341 in
+`https://github.com/raml-org/raml-spec`). `format` is a built-in facet of
+`datetime` (§ Date: "The additional facet `format` MUST be available only when
+the type equals `datetime`"), so a conforming parser must reject the file.
+
+go-raml (`https://github.com/acronis/go-raml`) accepts it. Its table of
+type-specific built-in facets (`consts.go`, `typeSpecificFacets`) has no
+`datetime` entry, and run with unwrap and validation it also accepts
+`facets: {pattern: string}` on a `string` subtype.
+
+The facet is now `calendar`, which no built-in type declares, so the fixture
+still shows that a subtype of `datetime` may declare facets of its own, beside
+`invalid-redefine-datetime.raml`, which redeclares the type name `datetime`.
