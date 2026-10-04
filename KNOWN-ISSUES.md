@@ -206,6 +206,9 @@ type-specific built-in facets (`consts.go`, `typeSpecificFacets`) has no
 `datetime` entry, and run with unwrap and validation it also accepts
 `facets: {pattern: string}` on a `string` subtype.
 
-The facet is now `calendar`, which no built-in type declares, so the fixture
-still shows that a subtype of `datetime` may declare facets of its own, beside
-`invalid-redefine-datetime.raml`, which redeclares the type name `datetime`.
+The type is now a `string` subtype, keeping the facet name `format`. `format`
+is a built-in facet of `number`, `integer` (§ Number, § Integer) and `datetime`, but not
+of `string`, so the file is valid and checks the other side of the rule: a
+parser must not refuse a facet name that is built-in only on some other type.
+`invalid-redefine-datetime.raml`, beside it, redeclares the type name
+`datetime`.
